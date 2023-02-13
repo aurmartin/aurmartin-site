@@ -1,0 +1,40 @@
+baseURL: "https://aurmartin.fr/"
+title: aurmartin
+paginate: 5
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+enableEmoji: true
+pygmentsUseClasses: true
+
+outputs:
+  home:
+    - HTML
+
+params:
+  env: production # to enable google analytics, opengraph, twitter-cards and schema.
+  description: "Aurélien Martin - Fullstack Web Developer"
+  author: Aurélien Martin
+  ShowCodeCopyButtons: true
+  profileMode:
+    enabled: true
+    title: Aurélien Martin
+    subtitle: Fullstack Web Developer
+    description: Transforming your ideas into reality with professional web development.
+    # imageUrl: "#"
+    # imageTitle: my image
+    # imageWidth: 120
+    # imageHeight: 120
+    # buttons:
+    #   - name: Blog
+    #     url: posts
+  socialIcons:
+    - name: github
+      url: "https://github.com/aurmartin"
+    - name: LinkedIn
+      url: "https://www.linkedin.com/in/aur%C3%A9lien-martin-7893211a5/"
+  assets:
+    favicon: "favicon.png"
