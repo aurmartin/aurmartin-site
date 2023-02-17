@@ -28,13 +28,13 @@ params:
     # imageTitle: my image
     # imageWidth: 120
     # imageHeight: 120
-    # buttons:
-    #   - name: Blog
-    #     url: posts
+    buttons:
+      - name: Blog
+        url: posts
   socialIcons:
     - name: github
       url: "https://github.com/aurmartin"
     - name: LinkedIn
-      url: "https://www.linkedin.com/in/aur%C3%A9lien-martin-7893211a5/"
+      url: "https://www.linkedin.com/in/aurmartin/"
   assets:
     favicon: "favicon.png"
