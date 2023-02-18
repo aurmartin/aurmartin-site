@@ -1,0 +1,193 @@
+---
+title: "React server-side rendering from strach"
+date: 2023-02-13T09:23:46+01:00
+draft: false
+---
+
+Server-side rendering (SSR) is a technique that allows web pages to be rendered on the server and sent to the client as fully-formed HTML documents. While client-side rendering (CSR) has many benefits, including faster navigation and a more dynamic user experience, it also has some drawbacks, such as slower initial page load times and poorer SEO performance.
+
+React, a popular JavaScript library for building user interfaces, can be used for both CSR and SSR. In this article, we will show you how to implement React server-side rendering from scratch. We will start from a really simple React application rendered on the client and setup server-side rendering. This article will focus on React and SSR so won't use fancy tools and libraries to avoid useless complexity. Therefore, there we won't use a bundler nor a Node.js backend framework
+
+By the end of this article, you should have a solid understand how SSR works at a low level and what it implies in your React applications.
+
+## Server-side rendering process
+
+The basic process of SSR in React is as follows:
+
+1. The server receives a request from the client for a specific URL.
+2. The React application is rendered on the server using [ReactDOMServer](https://reactjs.org/docs/react-dom-server.html) object.
+3. The server sends the generated HTML back to the client as the initial response.
+4. The client receives the HTML, hydrates the React application using [ReactDOMClient](https://reactjs.org/docs/react-dom-client.html) by attaching event listeners and re-rendering it if necessary.
+
+## Setting up the environment
+
+We will create a basic React application rendered on a [Node.js](https://nodejs.org/) server. To keep things focused on the concept of server-side rendering, we'll create everything from scratch and use as few external dependencies as possible.
+
+You'll just need to have a working Node.js installation, you can find more informations on the [Node.js website](https://nodejs.org/).
+
+## Initial application
+
+We will create a really simple http server to begin with. You can create a new javascript project:
+
+```bash
+mkdir ssr-from-scratch
+cd ssr-from-scratch
+npm init
+npm install --save koa koa-static
+```
+
+This will initialize npm, and install [koa](https://github.com/koajs/koa) web framework.
+
+Our `server.js` will be this one:
+
+```javascript
+import fs from "fs/promises";
+import Koa from "koa";
+import serve from "koa-static";
+
+const port = 8080;
+
+const app = new Koa();
+
+app.use(serve("static"));
+
+app.use(async (ctx) => {
+  ctx.body = await fs.readFile("index.html", "utf-8");
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
+});
+```
+
+Nothing too fancy here:
+
+- We serve static files from the `static` directory,
+- Otherwise, we send our `index.html`.
+
+Let's create our `index.html`:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@16.14.0",
+        "react-dom": "https://esm.sh/react-dom@16.14.0"
+      }
+    }
+  </script>
+
+  <script src="client.js" type="module"></script>
+</body>
+</html>
+```
+
+We use the [importmap](https://github.com/WICG/import-maps) feature to load React and ReactDOM. This allow us to use the same import statement whether the `client.js` is executed in Node.js or in the browser, we'll come back to that later.
+
+You can create your `static/client.js` like this:
+
+```javascript
+import React from "react";
+import ReactDOM from "react-dom";
+
+function App() {
+  return React.createElement("div", null, "Hello world!");
+}
+
+ReactDOM.render(App(), document.getElementById("root"));
+```
+
+Because we don't have a bundler, we can't use the JSX syntax. But we won't create a lot of components so its okay.
+
+Our import statements here are resolved using the importmap we defined earlier.
+
+Now, you can start the server using node:
+
+```bash
+node server.js
+```
+
+Once the server is up and running, open [http://localhost:8080/](http://localhost:8080/) in your browser, you should see our React application rendered. If you look at your network tab you can see the requests made to our server:
+
+![Browser network tab](./csr-network-tab.png)
+
+As you can see, on the initial HTML served by the server, the `#root` element is empty, which means that the application is currently only being rendered on the client side.
+
+## Enabling server-side rendering
+
+To use server-side rendering we need to call `ReactDOMServer.renderToString` on the server before sending the response.
+
+We need to install React and ReactDOM on server-side:
+
+```bash
+npm install --save react react-dom
+```
+
+Now we can try to use `ReactDOMServer.renderToString`. If you start a new node interactive terminal, you can play a bit with this function.
+For example:
+
+```javascript
+> const React = require("react");
+undefined
+> const ReactDOMServer = require("react-dom/server");
+undefined
+> const element = React.createElement("div", null, "Hello world!");
+undefined
+> ReactDOMServer.renderToString(element)
+'<div>Hello world!</div>'
+```
+
+As you can see, this function render a React element and return a string.
+
+To render the HTML document containing our frontend application rendered inside, we need to:
+
+1. Use `ReactDOMServer.renderToString` to render our application,
+2. Insert this HTML inside our `index.html` file.
+
+We will use [mustache](https://www.npmjs.com/package/mustache) as a template system to build our HTML response.
+
+```bash
+npm install --save mustache
+```
+
+Now, we are ready to implements the server-side rendering:
+
+```javascript
+import { App } from "./client.js";
+
+# ...
+
+const html = (serverSideRender) => {
+  return fs
+    .readFile("index.mustache", "utf-8")
+    .then((data) => {
+      return Mustache.render(data, { serverSideRender });
+    })
+    .catch((err) => console.error(err));
+};
+
+const serverSideRender = ReactDOMServer.renderToString(App());
+
+html(serverSideRender).then((response) => res.end(response));
+```
+
+You can rename `index.html` to `index.mustache` and insert our string here:
+
+```html
+<div id="root">{{{serverSideRender}}}</div>
+```
+
+On the client side, we can replace `React.render` with `React.hydrate` to avoid re-rendering our whole application.
+
+And voilà! Server-side rendering is as simple as that!

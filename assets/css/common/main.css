@@ -56,8 +56,8 @@ pre {
     right: 4px;
     color: rgba(255, 255, 255, 0.8);
     background: rgba(78, 78, 78, 0.8);
-    border-radius: var(--radius);
-    padding: 0 5px;
+    border-radius: 4px;
+    padding: 3px 8px;
     font-size: 14px;
     user-select: none;
 }

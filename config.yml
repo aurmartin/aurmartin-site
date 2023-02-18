@@ -38,3 +38,4 @@ params:
       url: "https://www.linkedin.com/in/aurmartin/"
   assets:
     favicon: "favicon.png"
+    disableScrollBarStyle: true
