@@ -52,6 +52,10 @@ const app = new Koa();
 app.use(serve("static"));
 
 app.use(async (ctx) => {
+  if (ctx.path !== "/") {
+    return;
+  }
+
   ctx.body = await fs.readFile("index.html", "utf-8");
 });
 
@@ -102,10 +106,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 function App() {
+  console.log("Rendering App");
   return React.createElement("div", null, "Hello world!");
 }
 
 ReactDOM.render(App(), document.getElementById("root"));
+
+export default App;
 ```
 
 Because we don't have a bundler, we can't use the JSX syntax. But we won't create a lot of components so its okay.
@@ -148,46 +155,80 @@ undefined
 '<div>Hello world!</div>'
 ```
 
-As you can see, this function render a React element and return a string.
+As you can see, this function render a React element and return the HTML string.
 
 To render the HTML document containing our frontend application rendered inside, we need to:
 
 1. Use `ReactDOMServer.renderToString` to render our application,
 2. Insert this HTML inside our `index.html` file.
 
-We will use [mustache](https://www.npmjs.com/package/mustache) as a template system to build our HTML response.
-
-```bash
-npm install --save mustache
-```
-
-Now, we are ready to implements the server-side rendering:
+We can do this in our `server.js`:
 
 ```javascript
-import { App } from "./client.js";
+import fs from "fs/promises";
+import Koa from "koa";
+import serve from "koa-static";
+import ReactDOMServer from "react-dom/server";
+import App from "./static/client.js";
 
-# ...
+const port = 8080;
 
-const html = (serverSideRender) => {
-  return fs
-    .readFile("index.mustache", "utf-8")
-    .then((data) => {
-      return Mustache.render(data, { serverSideRender });
-    })
-    .catch((err) => console.error(err));
-};
+const app = new Koa();
 
-const serverSideRender = ReactDOMServer.renderToString(App());
+app.use(serve("static"));
 
-html(serverSideRender).then((response) => res.end(response));
+app.use(async (ctx) => {
+  const serverSideRender = ReactDOMServer.renderToString(App());
+
+  const indexHtml = await fs.readFile("index.html", "utf-8");
+
+  ctx.body = indexHtml.replace(
+    `<div id="root"></div>`,
+    `<div id="root">${serverSideRender}</div>`
+  );
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
+});
 ```
 
-You can rename `index.html` to `index.mustache` and insert our string here:
-
-```html
-<div id="root">{{{serverSideRender}}}</div>
+If you start your server, you should see this error:
+```
+ReferenceError: document is not defined
 ```
 
-On the client side, we can replace `React.render` with `React.hydrate` to avoid re-rendering our whole application.
+What does this mean? This error is thrown because we are trying to use `document` in a Node.js environment. `document` is a global variable available in the browser, but not in Node.js. 
+
+When importing our client:
+```javascript
+import App from "./static/client.js";
+```
+
+We are actually executing the `client.js` file in Node.js. This is the first caveat encountered with server-side rendering. We need to be able to execute the same code in Node.js and in the browser. To do this, can use the magic `if (typeof window !== "undefined")`:
+
+```javascript
+import React from "react";
+import ReactDOM from "react-dom";
+
+function App() {
+  console.log("Rendering App");
+  return React.createElement("div", null, "Hello world!");
+}
+
+if (typeof window !== "undefined") {
+  ReactDOM.render(App(), document.getElementById("root"));
+}
+
+export default App;
+```
+
+Now, if you start your server, you should see the application rendered on the server side. The "Rendering App" log should appear in your server terminal and in your browser console. In your network tab, you should see that the `#root` element is not empty anymore.
+
+The last remaining issue here is that our app is rendered twice: on the server and on the client. To avoid this, we can use the React `hydrate` function instead of `render`:
+
+```javascript
+ReactDOM.hydrate(App(), document.getElementById("root"));
+```
 
 And voilà! Server-side rendering is as simple as that!
