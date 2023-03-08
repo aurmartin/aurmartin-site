@@ -1,8 +1,22 @@
 ---
-title: "React server-side rendering from strach"
-date: 2023-02-13T09:23:46+01:00
+title: "Vanilla React - Part 1"
+date: 2023-02-13
 draft: false
 ---
+
+## Vanllia React
+
+Welcome to the Vanilla React blog series. In this series, we will see how to create a basic React application using only the React library and without any third party library. We will start with server-side rendering and then we will add routing, data fetching, and more.
+
+You may be used to the React ecosystem and its many tools and libraries. But if you want to understand how React works under the hood, you should try to implement some of its features from scratch. This will help you to understand how React works and how to use it in the best way. Moreover, this vanilla approach is sufficient in many cases and will keep your application as simple as possible.
+
+These days, the [KISS](https://www.wikiwand.com/en/KISS_principle) principle is too often forgotten. React applications are bundled with a whole ecosystem, using only a small percentage of its feature but inherit all the complexity and overhead.
+
+One of the strange choices I've made is not to use JSX. At least I'm not using it in the first articles. I'll maybe add it later on depending on how it goes. I think it's important to understand how React works without JSX.
+
+I'm really excited to share this series with you! I hope you will enjoy it and learn something new.
+
+## Introduction
 
 Server-side rendering (SSR) is a technique that allows web pages to be rendered on the server and sent to the client as fully-formed HTML documents. While client-side rendering (CSR) has many benefits, including faster navigation and a more dynamic user experience, it also has some drawbacks, such as slower initial page load times and poorer SEO performance.
 
@@ -10,7 +24,7 @@ React, a popular JavaScript library for building user interfaces, can be used fo
 
 By the end of this article, you should have a solid understand how SSR works at a low level and what it implies in your React applications.
 
-## Server-side rendering process
+### Server-side rendering process
 
 The basic process of SSR in React is as follows:
 

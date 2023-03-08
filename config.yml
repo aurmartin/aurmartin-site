@@ -19,6 +19,7 @@ params:
   description: "Aurélien Martin - Fullstack Web Developer"
   author: Aurélien Martin
   ShowCodeCopyButtons: true
+  ShowReadingTime: true
   profileMode:
     enabled: true
     title: Aurélien Martin
