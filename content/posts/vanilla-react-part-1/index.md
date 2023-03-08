@@ -2,6 +2,9 @@
 title: "Vanilla React Part 1: Server-side rendering"
 date: 2023-02-13
 draft: false
+params:
+  cover:
+    image: ""
 ---
 
 ## Vanllia React
@@ -135,11 +138,7 @@ Now, you can start the server using node:
 node server.js
 ```
 
-Once the server is up and running, open [http://localhost:8080/](http://localhost:8080/) in your browser, you should see our React application rendered. If you look at your network tab you can see the requests made to our server:
-
-![Browser network tab](./csr-network-tab.png)
-
-As you can see, on the initial HTML served by the server, the `#root` element is empty, which means that the application is currently only being rendered on the client side.
+Once the server is up and running, open [http://localhost:8080/](http://localhost:8080/) in your browser, you should see our React application rendered. If you look at your network tab you should see that the `#root` is empty, which means that the application is currently only being rendered on the client side.
 
 ## Enabling server-side rendering
 
