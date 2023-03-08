@@ -1,5 +1,5 @@
 ---
-title: "Vanilla React - Part 2"
+title: "Vanilla React Part 2: Routing"
 date: 2023-03-08
 draft: false
 ---

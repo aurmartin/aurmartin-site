@@ -1,5 +1,5 @@
 ---
-title: "Vanilla React - Part 1"
+title: "Vanilla React Part 1: Server-side rendering"
 date: 2023-02-13
 draft: false
 ---
