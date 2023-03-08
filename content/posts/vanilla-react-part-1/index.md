@@ -20,9 +20,7 @@ I'm really excited to share this series with you! I hope you will enjoy it and l
 
 Server-side rendering (SSR) is a technique that allows web pages to be rendered on the server and sent to the client as fully-formed HTML documents. While client-side rendering (CSR) has many benefits, including faster navigation and a more dynamic user experience, it also has some drawbacks, such as slower initial page load times and poorer SEO performance.
 
-React, a popular JavaScript library for building user interfaces, can be used for both CSR and SSR. In this article, we will show you how to implement React server-side rendering from scratch. We will start from a really simple React application rendered on the client and setup server-side rendering. This article will focus on React and SSR so won't use fancy tools and libraries to avoid useless complexity. Therefore, there we won't use a bundler nor a Node.js backend framework
-
-By the end of this article, you should have a solid understand how SSR works at a low level and what it implies in your React applications.
+In this article, we will see how to create a basic React application with server-side rendering.
 
 ### Server-side rendering process
 
