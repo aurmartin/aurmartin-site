@@ -10,8 +10,6 @@ Welcome to the Vanilla React blog series! In this series, we will see how to cre
 
 You may be used to the React ecosystem but if you want to understand how a React application works under the hood, you should try to implement some of its features from scratch. This will help you understand how React works and how to use it in the best way. Moreover, this vanilla approach is sufficient in many cases and will keep your application as simple as possible.
 
-These days, the [KISS](https://www.wikiwand.com/en/KISS_principle) principle is too often forgotten. React applications are bundled with a whole ecosystem, using only a small percentage of its feature but inherit all the complexity and overhead.
-
 One of the weird choices I've made is not to use JSX. At least I'm not using it in the first articles. I'll maybe add it later on depending on how it goes. I think it's important to understand how React works without JSX.
 
 I'm really excited to share this series with you! I hope you will enjoy it and learn something new.
